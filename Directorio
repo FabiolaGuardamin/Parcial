@@ -1,0 +1,38 @@
+from .models import Book, Copy, Reader, Author
+from typing import Dict, List
+from datetime import date
+
+class InMemoryRepo:
+    def __init__(self):
+        self.books: Dict[str, Book] = {}   # key: title|year|edition
+        self.copies: Dict[str, Copy] = {}
+        self.readers: Dict[str, Reader] = {}
+
+    def add_book(self, book: Book):
+        key = self._book_key(book)
+        self.books[key] = book
+        return book
+
+    def get_book(self, title: str, year: int, edition: str = None):
+        key = f"{title}|{year}|{edition}"
+        return self.books.get(key)
+
+    def add_copy(self, copy: Copy):
+        self.copies[copy.copy_id] = copy
+        return copy
+
+    def get_copy(self, copy_id: str):
+        return self.copies.get(copy_id)
+
+    def list_copies_by_book(self, book: Book):
+        return [c for c in self.copies.values() if c.book == book]
+
+    def add_reader(self, reader: Reader):
+        self.readers[reader.reader_id] = reader
+        return reader
+
+    def get_reader(self, reader_id: str):
+        return self.readers.get(reader_id)
+
+    def _book_key(self, book: Book):
+        return f"{book.title}|{book.year}|{book.edition}"
