@@ -1,0 +1,35 @@
+from dataclasses import dataclass, field
+from datetime import date, timedelta
+from typing import Optional
+import uuid
+
+@dataclass
+class Author:
+    name: str
+    birthdate: date
+
+@dataclass
+class Book:
+    title: str
+    year: int
+    author: Author
+    edition: Optional[str] = None  # e.g., "10th", "traducción"
+
+@dataclass
+class Copy:
+    book: Book
+    copy_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    status: str = "in_library"  # in_library, borrowed, reserved, overdue, repairing
+    borrowed_by: Optional[str] = None
+    borrowed_until: Optional[date] = None
+
+@dataclass
+class Reader:
+    reader_id: str
+    name: str
+    borrowed_copies: list = field(default_factory=list)  # list of copy_ids
+    banned_until: Optional[date] = None
+
+    def is_banned(self, today: date):
+        return self.banned_until is not None and today <= self.banned_until
+
